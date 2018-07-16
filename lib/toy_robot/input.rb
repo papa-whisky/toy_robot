@@ -1,22 +1,49 @@
 module ToyRobot
   class Input
+    VALID_COMMANDS = %w[PLACE MOVE LEFT RIGHT REPORT]
+    VALID_BEARINGS = %w[NORTH EAST SOUTH WEST]
+
     attr_reader :command
-    attr_reader :params
 
     def initialize(input)
       args = input.split(' ')
 
       @command = args[0]
-      @params = parse_params_from(args[1])
+      @raw_params = args[1]&.split(',')
+    end
+
+    def params
+      return unless raw_params
+      { x: raw_params[0].to_i, y: raw_params[1].to_i, bearing: raw_params[2] }
+    end
+
+    def valid?
+      command_valid? && params_valid?
     end
 
     private
 
-    def parse_params_from(input)
-      return unless input
+    attr_reader :raw_params
 
-      params = input.split(',')
-      { x: params[0].to_i, y: params[1].to_i, bearing: params[2] }
+    def command_valid?
+      VALID_COMMANDS.include? command
+    end
+
+    def params_valid?
+      if command == 'PLACE'
+        !!params && coordinates_valid? && bearing_valid?
+      else
+        params.nil?
+      end
+    end
+
+    def coordinates_valid?
+      # Ensure coordinates consist of digits only
+      [raw_params[0], raw_params[1]].all? { |value| /^\d+$/ =~ value }
+    end
+
+    def bearing_valid?
+      VALID_BEARINGS.include? raw_params[2]
     end
   end
 end
