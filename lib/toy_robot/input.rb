@@ -1,7 +1,7 @@
 module ToyRobot
   class Input
-    VALID_COMMANDS = %w[PLACE MOVE LEFT RIGHT REPORT]
-    VALID_BEARINGS = %w[NORTH EAST SOUTH WEST]
+    VALID_COMMANDS = %w[PLACE MOVE LEFT RIGHT REPORT].freeze
+    VALID_BEARINGS = %w[NORTH EAST SOUTH WEST].freeze
 
     attr_reader :command
 
@@ -31,7 +31,7 @@ module ToyRobot
 
     def params_valid?
       if command == 'PLACE'
-        !!params && coordinates_valid? && bearing_valid?
+        !params.nil? && coordinates_valid? && bearing_valid?
       else
         params.nil?
       end
